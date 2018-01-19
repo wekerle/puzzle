@@ -1,0 +1,6 @@
+.mainBoard
+{
+    -fx-border-style: solid inside;
+    -fx-border-width: 1;
+    -fx-border-color: red;
+}
