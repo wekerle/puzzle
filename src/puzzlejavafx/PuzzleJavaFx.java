@@ -5,26 +5,14 @@
  */
 package puzzlejavafx;
 
-import ViewModels.PuzzlePiece;
-import java.util.ArrayList;
-import java.util.HashMap;
+import ViewModels.GameSessionView;
 import javafx.application.Application;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -32,19 +20,17 @@ import javafx.stage.WindowEvent;
  *
  * @author tibor.wekerle
  */
-public class PuzzleJavaFx extends Application {
+public class PuzzleJavaFx extends Application{
     
     private BorderPane borderPane = new BorderPane();
     private Scene scene=new Scene(borderPane);
     private Stage stage=null;
-    private HashMap<Integer,PuzzlePiece> puzzlePiecesMap=new HashMap<Integer,PuzzlePiece>();
-    
+        
     @Override
     public void start(Stage primaryStage) {       
         MenuBar menuBar=createMenu();       
         borderPane.setTop(menuBar);         
         borderPane.setCenter(getContent());
-        borderPane.setBottom(getBottom());
         
         stage=primaryStage;
     
@@ -53,11 +39,7 @@ public class PuzzleJavaFx extends Application {
         primaryStage.setWidth(825);
         primaryStage.setHeight(700);
         
-        primaryStage.setTitle("Iza & Tibi");
-        
-        
-        
-        
+        primaryStage.setTitle("Iza & Tibi");                            
         primaryStage.setScene(scene);
         primaryStage.show(); 
     }
@@ -100,81 +82,10 @@ public class PuzzleJavaFx extends Application {
         return menuBar;
 
     }
-    
-    private void initPuzzlePieces(Image image){
-        ArrayList<PuzzlePiece> puzzlePieces=new DataCollector().getPuzzlePieces(image);
-        
-        for(PuzzlePiece puzzle : puzzlePieces)
-        {
-           this.puzzlePiecesMap.put(new Integer(puzzle.getPuzzleId()), puzzle);
-        }
-    }    
-        
-    private HBox getBottom(){
-        HBox hBox=new HBox();
-        
-        ImageView nextButton=new ImageView(new Image("img/next.png"));
-        ImageView previousButton=new ImageView(new Image("img/previous.png"));
-        
-                
-        Pane puzzlePiecesContainer=new Pane();
-
-        int i=0;
-        for (HashMap.Entry item : puzzlePiecesMap.entrySet()) {
-          PuzzlePiece puzzle=(PuzzlePiece)item.getValue();
-         // puzzle.setLayoutX(i*120);
-         puzzle.setTranslateX(i*50);
-          i++;
-          puzzlePiecesContainer.getChildren().add(puzzle);
-        }
-        
-      //  hBox.getChildren().add(previousButton);
-        hBox.getChildren().add(puzzlePiecesContainer);
-      //  hBox.getChildren().add(nextButton);
-        
-        hBox.setPadding(new Insets(20,0, 10, 20));
-        return hBox;
-    }
-        
-    private GridPane getContent() 
+                    
+    private GameSessionView getContent() 
     {
-        GridPane grid = new GridPane();              
-        grid.setPadding(new Insets(20, 10, 10, 20));
-    
-        Image image=new Image("/img/flip.jpg");
-        initPuzzlePieces(image);
-        
-        Pane pane = new Pane();
-        pane.setMinWidth(image.getWidth());
-        pane.setMinHeight(image.getHeight());
-       // ArrayList<PuzzlePiece> pieces=new DataCollector().getPuzzlePieces(new Image("/img/flip.jpg"));
-        int i=0;
-        int j=0;
-        for (HashMap.Entry item : puzzlePiecesMap.entrySet())
-        {
-            PuzzlePiece puzzle=(PuzzlePiece)item.getValue();            
-           // puzzle.setLayoutX(i*200);
-          //  puzzle.setLayoutY(j*170);           
-            pane.getChildren().add(puzzle);
-            if(i % 2==0){
-             //  pane.getChildren().add(puzzle);
-            }
-            
-            
-            
-            i++;
-            
-            if(i==3){
-             j++;
-             i=0;
-            }
-        }
-        
-        
-        //pane.getChildren().addAll(pieces.get(4));
-        grid.add(pane,0,0);
-                
-        pane.getStyleClass().add("mainBoard");
-        return grid;
+        GameSessionView content=new GameSessionView();
+        return content;
     }    
 }

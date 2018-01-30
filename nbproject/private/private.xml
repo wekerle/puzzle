@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
+        <file>
+            <url>src/ViewModels/PuzzlePiece.java</url>
+            <bookmark id="1">
+                <name/>
+                <line>115</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/tibor.wekerle/Documents/NetBeansProjects/PuzzleJavaFx/src/ViewModels/PuzzlePiece.java</file>
             <file>file:/C:/Users/tibor.wekerle/Documents/NetBeansProjects/PuzzleJavaFx/src/img/flip.jpg</file>
+            <file>file:/C:/Users/tibor.wekerle/Documents/NetBeansProjects/PuzzleJavaFx/nbproject/build-impl.xml</file>
             <file>file:/C:/Users/tibor.wekerle/Documents/NetBeansProjects/PuzzleJavaFx/src/puzzlejavafx/PuzzleJavaFx.java</file>
+            <file>file:/C:/Users/tibor.wekerle/Documents/NetBeansProjects/PuzzleJavaFx/src/puzzlejavafx/IdGenerator.java</file>
             <file>file:/C:/Users/tibor.wekerle/Documents/NetBeansProjects/PuzzleJavaFx/src/puzzlejavafx/DataCollector.java</file>
             <file>file:/C:/Users/tibor.wekerle/Documents/NetBeansProjects/PuzzleJavaFx/src/Styling/styles.css</file>
+            <file>file:/C:/Users/tibor.wekerle/Documents/NetBeansProjects/PuzzleJavaFx/src/Listeners/PuzzlePositionChangeListener.java</file>
         </group>
     </open-files>
 </project-private>
