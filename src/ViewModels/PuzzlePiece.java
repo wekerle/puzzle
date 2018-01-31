@@ -18,6 +18,7 @@ import javafx.scene.layout.HBox;
 public class PuzzlePiece extends HBox{
     private ImageView puzzle;
     private int puzzleId;
+    private double puzzlePieceWidth, puzzlePieceHeight;
     private double correctX, correctY;
     private double orgSceneX, orgSceneY;
     private double orgTranslateX, orgTranslateY;
@@ -28,6 +29,14 @@ public class PuzzlePiece extends HBox{
     private double calculateDistanceToCorrectPosition()
     {
         return (Math.sqrt((correctX-newTranslateX)*(correctX-newTranslateX) + (correctY-newTranslateY)*(correctY-newTranslateY)));
+    }
+
+    public double getPuzzlePieceWidth() {
+        return puzzlePieceWidth;
+    }
+
+    public double getPuzzlePieceHeight() {
+        return puzzlePieceHeight;
     }
     
     public double getCorrectX() {
@@ -98,13 +107,15 @@ public class PuzzlePiece extends HBox{
         this.movedOutFromFooter = movedOutFromFooter;
     }
     
-    public PuzzlePiece(int id, int toothN, int toothS, int toothW, int toothE,ImageView image){
+    public PuzzlePiece(int id, int toothN, int toothS, int toothW, int toothE,ImageView image, double width, double height){
         this.puzzle=image;
         this.puzzleId=id;
         this.getChildren().add(puzzle);
         this.movedOutFromFooter=false;
         this.isHidden=false;
         this.isOnRightPosition=false;
+        this.puzzlePieceWidth=width;
+        this.puzzlePieceHeight=height;
         
        this.setOnMousePressed(new EventHandler<MouseEvent>(){
             @Override

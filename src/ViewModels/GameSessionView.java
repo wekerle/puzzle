@@ -25,26 +25,29 @@ import puzzlejavafx.DataCollector;
 public class GameSessionView extends BorderPane implements PuzzlePositionChangeListener{
     
     private HashMap<Integer,PuzzlePiece> puzzlePiecesMap=new HashMap<Integer,PuzzlePiece>();
+    private HBox footer=new HBox();
+    private GridPane center=new GridPane();
+    private Pane mainBoard=new Pane();
+    private Image otherImage=new Image("img/refresh.png");
+    private final double SPACE_BEETWEEN_PUZZLES=10;
         
     private void populateContent()
-    {       
-       this.setCenter(getCenterContent());
-       this.setBottom(getBottomContent());   
+    {   
+        this.setCenter(this.center);
+        this.setBottom(this.footer);  
+        initCenterContent();
+        initBottomContent(); 
     }
-    
-    private HBox getBottomContent(){      
-        HBox footer=new HBox();
-        ImageView previousButton=new ImageView(new Image("img/previous.png"));                       
+        
+    private void initBottomContent(){      
+        ImageView previousButton=new ImageView(otherImage);                       
         Pane puzzlePiecesContainer=new Pane();
 
         int i=0;
         int j=0;
         for (HashMap.Entry item : puzzlePiecesMap.entrySet()) {
             PuzzlePiece puzzle=(PuzzlePiece)item.getValue();
-            puzzle.setTranslateX(i*110);
-           
-            puzzle.setCorrectX(j*100+200);
-            puzzle.setCorrectY(i*100-300);
+            puzzle.setTranslateX(i*(puzzle.getPuzzlePieceWidth()+SPACE_BEETWEEN_PUZZLES));
             
             i++;
             if(i==3){
@@ -59,48 +62,22 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
         
         footer.setPadding(new Insets(20,0, 10, 20));
         footer.getStyleClass().add("footer");
-        
-        return footer;
     }
         
-    private GridPane getCenterContent() 
-    {
-        GridPane grid = new GridPane();              
-        grid.setPadding(new Insets(20, 10, 10, 20));
+    private void initCenterContent() 
+    {             
+        center.setPadding(new Insets(20, 10, 10, 20));
     
         Image image=new Image("/img/flip.jpg");
         initPuzzlePieces(image);
         
-        Pane pane = new Pane();
-        pane.setMinWidth(image.getWidth());
-        pane.setMinHeight(image.getHeight());
+        mainBoard.setMinWidth(image.getWidth());
+        mainBoard.setMinHeight(image.getHeight());
         
-        int i=0;
-        int j=0;
-        for (HashMap.Entry item : puzzlePiecesMap.entrySet())
-        {
-            PuzzlePiece puzzle=(PuzzlePiece)item.getValue();            
-            //puzzle.setTranslateY(i*100);
-            //puzzle.setTranslateX(j*100);           
-            //pane.getChildren().add(puzzle);
-            
-           // puzzle.setCorrectX(j*100);
-            //puzzle.setCorrectY(i*100);
-                                 
-            i++;
-            
-            if(i==3){
-             j++;
-             i=0;
-            }
-        }
-        
-        
-        //pane.getChildren().addAll(pieces.get(4));
-        grid.add(pane,0,0);
+        center.add(mainBoard,0,0);
                 
-        pane.getStyleClass().add("mainBoard");
-        return grid;
+        mainBoard.getStyleClass().add("mainBoard");      
+        center.getStyleClass().add("center");
     }
 
     private void initPuzzlePieces(Image image){
@@ -115,10 +92,11 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
     
     private boolean puzzleIsOutFromFooter(PuzzlePiece puzzle){
         boolean result=false;
-        HBox footer=(HBox)(puzzle.getParent().getParent());
+        
         Bounds footerBoundsInScene = footer.getBoundsInParent();
         Bounds puzzleBoundsInFooter =  puzzle.getBoundsInParent();
         Insets footerPadding=footer.getPadding();
+        this.footer.getBoundsInParent();
         
         double foooterInSceneMinY=footerBoundsInScene.getMinY(); 
         double puzzleInSceneMaxY=foooterInSceneMinY + puzzleBoundsInFooter.getMaxY()+footerPadding.getTop();
@@ -144,4 +122,25 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
     {
         populateContent();       
     }   
+    
+    public void initPuzzlesCorrectPosition(){
+        int i=0;
+        int j=0;
+        for (HashMap.Entry item : puzzlePiecesMap.entrySet()) {
+            PuzzlePiece puzzle=(PuzzlePiece)item.getValue();       
+            Bounds centerBounds=this.center.getBoundsInParent();
+
+            double correctX=centerBounds.getMinX() + puzzle.getTranslateX()-((puzzle.getPuzzlePieceWidth()+SPACE_BEETWEEN_PUZZLES)*i)-otherImage.getWidth();
+            double correctY=centerBounds.getMinY()-centerBounds.getHeight();
+
+            puzzle.setCorrectX(correctX+j*puzzle.getPuzzlePieceWidth());
+            puzzle.setCorrectY(correctY+i*puzzle.getPuzzlePieceHeight());
+            
+            i++;
+            if(i==3){
+               j++;
+               i=0;
+            }
+        }
+    }
 }

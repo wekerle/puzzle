@@ -25,12 +25,14 @@ public class PuzzleJavaFx extends Application{
     private BorderPane borderPane = new BorderPane();
     private Scene scene=new Scene(borderPane);
     private Stage stage=null;
+    private GameSessionView gameSession=null;
         
     @Override
     public void start(Stage primaryStage) {       
-        MenuBar menuBar=createMenu();       
+        MenuBar menuBar=createMenu(); 
+        initGameSession();
         borderPane.setTop(menuBar);         
-        borderPane.setCenter(getContent());
+        borderPane.setCenter(gameSession);
         
         stage=primaryStage;
     
@@ -41,7 +43,9 @@ public class PuzzleJavaFx extends Application{
         
         primaryStage.setTitle("Iza & Tibi");                            
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show(); 
+        gameSession.initPuzzlesCorrectPosition();
     }
 
     /**
@@ -83,9 +87,8 @@ public class PuzzleJavaFx extends Application{
 
     }
                     
-    private GameSessionView getContent() 
+    private void initGameSession() 
     {
-        GameSessionView content=new GameSessionView();
-        return content;
+        gameSession=new GameSessionView();
     }    
 }

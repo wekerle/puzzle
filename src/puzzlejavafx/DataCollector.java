@@ -37,7 +37,7 @@ public class DataCollector {
                 r.setHeight(height);
                 //imageView.setClip(r);
                 
-                Rectangle2D r2 = new Rectangle2D(i*height,j*width,width,height);
+                Rectangle2D r2 = new Rectangle2D(i*width,j*height,width,height);
                 imageView.setViewport(r2);
                 
                 Rectangle rr = new Rectangle();
@@ -45,8 +45,8 @@ public class DataCollector {
                 rr.setY(j);
                 rr.setWidth(width-50);
                 rr.setHeight(height-50);
-               // imageView.setClip(rr);
-                PuzzlePiece puzzlePiece=new PuzzlePiece(IdGenerator.getNewId(),0, 0, 0, 0,imageView);
+                //imageView.setClip(rr);
+                PuzzlePiece puzzlePiece=new PuzzlePiece(IdGenerator.getNewId(),0, 0, 0, 0,imageView,width,height);
                 
                 result.add(puzzlePiece);
             }

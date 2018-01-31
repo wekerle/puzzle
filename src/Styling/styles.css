@@ -11,3 +11,10 @@
     -fx-border-width: 1;
     -fx-border-color: blue;
 }
+
+.center
+{
+    -fx-border-style: solid inside;
+    -fx-border-width: 1;
+    -fx-border-color: green;
+}
