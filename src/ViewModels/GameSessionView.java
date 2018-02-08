@@ -8,14 +8,17 @@ package ViewModels;
 import Listeners.PuzzlePositionChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import puzzlejavafx.DataCollector;
 
 /**
@@ -29,46 +32,48 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
     private GridPane center=new GridPane();
     private Pane mainBoard=new Pane();
     private Image otherImage=new Image("img/refresh.png");
-    private final double SPACE_BEETWEEN_PUZZLES=10;
+    private final double SPACE_BEETWEEN_PUZZLES=15;
+    private int numberOfPuzzlesInFooter=4;
+    private int nrVertical=3,nrHorizontal=3;
         
-    private void populateContent()
+    private void populateContent(Image image)
     {   
         this.setCenter(this.center);
         this.setBottom(this.footer);  
-        initCenterContent();
-        initBottomContent(); 
+        initCenterContent(image);
+        initBottomContent();
     }
-        
+    
     private void initBottomContent(){      
-        ImageView previousButton=new ImageView(otherImage);                       
+        ImageView otherButton=new ImageView(otherImage);
+        VBox otherButtonContainer=new VBox();
         Pane puzzlePiecesContainer=new Pane();
 
-        int i=0;
-        int j=0;
+        int i=1;
+        boolean isVisible=true;
         for (HashMap.Entry item : puzzlePiecesMap.entrySet()) {
             PuzzlePiece puzzle=(PuzzlePiece)item.getValue();
-            puzzle.setTranslateX(i*(puzzle.getPuzzlePieceWidth()+SPACE_BEETWEEN_PUZZLES));
+            puzzle.setTranslateX((i-1)*(puzzle.getPuzzlePieceWidth()+SPACE_BEETWEEN_PUZZLES));
+            puzzle.setIsVisible(isVisible);
             
-            i++;
-            if(i==3){
-               j++;
-               i=0;
+            if(i==numberOfPuzzlesInFooter){
+               isVisible=false;
+               i=1;
             }
             puzzlePiecesContainer.getChildren().add(puzzle);
+            i++;
         }
         
-        footer.getChildren().add(previousButton);
+        otherButtonContainer.getChildren().add(otherButton);
+        otherButtonContainer.setAlignment(Pos.CENTER);
+        footer.getChildren().add(otherButtonContainer);
         footer.getChildren().add(puzzlePiecesContainer);
         
-        footer.setPadding(new Insets(20,0, 10, 20));
         footer.getStyleClass().add("footer");
     }
         
-    private void initCenterContent() 
-    {             
-        center.setPadding(new Insets(20, 10, 10, 20));
-    
-        Image image=new Image("/img/flip.jpg");
+    private void initCenterContent(Image image) 
+    {                 
         initPuzzlePieces(image);
         
         mainBoard.setMinWidth(image.getWidth());
@@ -81,7 +86,7 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
     }
 
     private void initPuzzlePieces(Image image){
-        ArrayList<PuzzlePiece> puzzlePieces=new DataCollector().getPuzzlePieces(image);
+        ArrayList<PuzzlePiece> puzzlePieces=new DataCollector().getPuzzlePieces(image,nrVertical,nrHorizontal);
 
         for(PuzzlePiece puzzle : puzzlePieces)
         {
@@ -91,7 +96,7 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
     }
     
     private boolean puzzleIsOutFromFooter(PuzzlePiece puzzle){
-        boolean result=false;
+        boolean result=true;
         
         Bounds footerBoundsInScene = footer.getBoundsInParent();
         Bounds puzzleBoundsInFooter =  puzzle.getBoundsInParent();
@@ -102,7 +107,7 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
         double puzzleInSceneMaxY=foooterInSceneMinY + puzzleBoundsInFooter.getMaxY()+footerPadding.getTop();
         
         if(puzzleInSceneMaxY>=foooterInSceneMinY){
-            result=true;
+            result=false;
         }
         
         return result;
@@ -112,15 +117,24 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
     public void positionChanged(PuzzlePiece puzzle) {        
         boolean puzzleIsOutFromFooter=puzzleIsOutFromFooter(puzzle);
         //if not left completly the footer bounds
-        if(puzzleIsOutFromFooter){
+        if(!puzzleIsOutFromFooter){
             puzzle.setTranslateX(puzzle.getOrgTranslateX());
             puzzle.setTranslateY(puzzle.getOrgTranslateY());  
+        }else{
+            for (HashMap.Entry item : puzzlePiecesMap.entrySet()){
+                PuzzlePiece puzzlePiece=(PuzzlePiece)item.getValue();
+                if(!puzzlePiece.isVisible()){
+                    puzzlePiece.setIsVisible(true);
+                    puzzlePiece.setTranslateX(puzzle.getOrgTranslateX());
+                    break;
+                }
+            }
         }     
     }
     
-    public GameSessionView()
+    public GameSessionView(Image image)
     {
-        populateContent();       
+        populateContent(image);       
     }   
     
     public void initPuzzlesCorrectPosition(){
@@ -129,15 +143,16 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
         for (HashMap.Entry item : puzzlePiecesMap.entrySet()) {
             PuzzlePiece puzzle=(PuzzlePiece)item.getValue();       
             Bounds centerBounds=this.center.getBoundsInParent();
+            Insets centerPadding=this.center.getPadding();
 
-            double correctX=centerBounds.getMinX() + puzzle.getTranslateX()-((puzzle.getPuzzlePieceWidth()+SPACE_BEETWEEN_PUZZLES)*i)-otherImage.getWidth();
             double correctY=centerBounds.getMinY()-centerBounds.getHeight();
-
+            double correctX=centerBounds.getMinX()-otherImage.getWidth()+centerPadding.getLeft();
+            
             puzzle.setCorrectX(correctX+j*puzzle.getPuzzlePieceWidth());
             puzzle.setCorrectY(correctY+i*puzzle.getPuzzlePieceHeight());
             
             i++;
-            if(i==3){
+            if(i==nrVertical){
                j++;
                i=0;
             }

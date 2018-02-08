@@ -23,7 +23,7 @@ public class PuzzlePiece extends HBox{
     private double orgSceneX, orgSceneY;
     private double orgTranslateX, orgTranslateY;
     private double newTranslateX, newTranslateY;
-    private boolean isHidden,movedOutFromFooter, isOnRightPosition;
+    private boolean isVisible,movedOutFromFooter, isOnRightPosition;
     private PuzzlePositionChangeListener puzzlePositionChangeListener;
     
     private double calculateDistanceToCorrectPosition()
@@ -91,12 +91,13 @@ public class PuzzlePiece extends HBox{
         this.puzzlePositionChangeListener = puzzlePositionChangeListener;
     }
     
-    public boolean isIsHidden() {
-        return isHidden;
+    public boolean getIsVisible() {
+        return isVisible;
     }
 
-    public void setIsHidden(boolean isHidden) {
-        this.isHidden = isHidden;
+    public void setIsVisible(boolean isVisible) {
+        this.isVisible = isVisible;
+        this.setVisible(isVisible);
     }
 
     public boolean isMovedOutFromFooter() {
@@ -112,7 +113,6 @@ public class PuzzlePiece extends HBox{
         this.puzzleId=id;
         this.getChildren().add(puzzle);
         this.movedOutFromFooter=false;
-        this.isHidden=false;
         this.isOnRightPosition=false;
         this.puzzlePieceWidth=width;
         this.puzzlePieceHeight=height;
@@ -141,9 +141,9 @@ public class PuzzlePiece extends HBox{
                     ((PuzzlePiece)(event.getSource())).setTranslateY(newTranslateY);
 
                     if(calculateDistanceToCorrectPosition()<50){
-                        ((PuzzlePiece)(event.getSource())).setTranslateX(correctX);
-                        ((PuzzlePiece)(event.getSource())).setTranslateY(correctY);
-                        isOnRightPosition=true;
+                       // ((PuzzlePiece)(event.getSource())).setTranslateX(correctX);
+                       // ((PuzzlePiece)(event.getSource())).setTranslateY(correctY);
+                       // isOnRightPosition=true;
                     }
                 }
             }
