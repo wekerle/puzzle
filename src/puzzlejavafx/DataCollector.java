@@ -31,15 +31,20 @@ import javafx.scene.shape.Shape;
 public class DataCollector {
     private Boolean[][] verticalTooths;
     private Boolean[][] horizontalTooths;
+    private double nordSudToothHeight=0;
+    private double estWestHeight=0;
     
     public ArrayList<PuzzlePiece> getPuzzlePieces(Image image,int nrVertical, int nrHorizontal){
         initVerticalTooths(nrVertical,nrHorizontal);
         initOrizontalTooths(nrVertical,nrHorizontal);
-        
+                
         ArrayList<PuzzlePiece> result =new ArrayList<PuzzlePiece>();
         
         double width=image.getWidth()/nrHorizontal;
         double height=image.getHeight()/nrVertical;
+        
+        initNordSudToothHeight(width,height);
+       // initEstWestToothHeight(width,height);
         
         for(int i=0;i<nrHorizontal;i++){
             for(int j=0;j<nrVertical;j++){
@@ -61,17 +66,17 @@ public class DataCollector {
         for(int i=0;i<nrVertical;i++){
             for(int j=0;j<nrHorizontal-1;j++){
                 boolean bool = new Random().nextBoolean();
-                verticalTooths[i][j]=bool;
+               // verticalTooths[i][j]=bool;
             }
         }   
-       // verticalTooths[0][0]=true;
-      //  verticalTooths[0][1]=false;
+        verticalTooths[0][0]=true;
+        verticalTooths[0][1]=false;
         
-        //verticalTooths[1][0]=true;
-        //verticalTooths[1][1]=false;
+        verticalTooths[1][0]=true;
+        verticalTooths[1][1]=false;
         
-       // verticalTooths[2][0]=true;
-      // verticalTooths[2][1]=false;
+        verticalTooths[2][0]=true;
+       verticalTooths[2][1]=false;
     }
     
     private void initOrizontalTooths(int nrVertical,int nrHorizontal){
@@ -108,9 +113,10 @@ public class DataCollector {
                 toothN.setEndX(width/2-width/8);
                 toothN.setEndY(0.0f);
                 
-               shape = Shape.subtract(r,toothN);  
+               shape = Shape.subtract(r,toothN);               
             }else{
-                testOffset=35;
+               testOffset=nordSudToothHeight;
+              // testOffset=35;
                 r.setY(0+testOffset);              
                 toothN.setStartX(width/2+width/8);
                 toothN.setStartY(0+testOffset);
@@ -147,10 +153,7 @@ public class DataCollector {
                 }else{
                     shape = Shape.subtract(shape, toothS);
                 }
-            }else{
-                Rectangle2D r3 = new Rectangle2D(i*width,j*height-testOffset,width,height+70);
-                imageView.setViewport(r3);
-               
+            }else{               
                 toothS.setStartX(width/2+width/8);
                 toothS.setStartY(height+testOffset);
                 toothS.setControlX1(width/2+width/1.75);
@@ -159,7 +162,10 @@ public class DataCollector {
                 toothS.setControlY2(height+height/2+testOffset);
                 toothS.setEndX(width/2-width/8);
                 toothS.setEndY(height+testOffset);
-                                                              
+                        
+              //  testDouble=toothS.getLayoutBounds().getHeight();
+                Rectangle2D r3 = new Rectangle2D(i*width,j*height-testOffset,width,height+75);
+                imageView.setViewport(r3);
                 if(shape==null){
                     shape = Shape.union(r, toothS);
                 }else{
@@ -283,5 +289,23 @@ public class DataCollector {
        // imageView.setViewport(r);
         }
 
+    }
+
+    private void initNordSudToothHeight(double width, double height) {
+        CubicCurve tooth = new CubicCurve();
+        tooth.setStartX(width/2+width/8);
+        tooth.setStartY(0.0f);
+        tooth.setControlX1(width/2+width/1.75);
+        tooth.setControlY1(height/2);
+        tooth.setControlX2(width/2-width/1.75);
+        tooth.setControlY2(height/2);
+        tooth.setEndX(width/2-width/8);
+        tooth.setEndY(0.0f);
+        
+        nordSudToothHeight=tooth.getLayoutBounds().getHeight();
+    }
+
+    private void initEstVestToothHeight(double width, double height) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
