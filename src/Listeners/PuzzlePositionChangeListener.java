@@ -5,7 +5,7 @@
  */
 package Listeners;
 
-import ViewModels.PuzzlePiece;
+import Models.PuzzlePiece;
 
 
 /**

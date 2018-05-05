@@ -6,6 +6,7 @@
 package ViewModels;
 
 import Listeners.PuzzlePositionChangeListener;
+import Models.PuzzlePiece;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;

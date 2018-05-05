@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ViewModels;
+package Models;
 
 import Listeners.PuzzlePositionChangeListener;
+import Models.ToothHeightsModel;
 import javafx.event.EventHandler;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -25,11 +26,13 @@ public class PuzzlePiece extends HBox{
     private double newTranslateX, newTranslateY;
     private boolean isVisible,movedOutFromFooter, isOnRightPosition;
     private PuzzlePositionChangeListener puzzlePositionChangeListener;
-    
+    private ToothHeightsModel toothHeights;
     private double calculateDistanceToCorrectPosition()
     {
         return (Math.sqrt((correctX-newTranslateX)*(correctX-newTranslateX) + (correctY-newTranslateY)*(correctY-newTranslateY)));
     }
+    
+    // <editor-fold defaultstate="collapsed" desc="getter setter region ">
 
     public double getPuzzlePieceWidth() {
         return puzzlePieceWidth;
@@ -45,6 +48,7 @@ public class PuzzlePiece extends HBox{
 
     public void setCorrectX(double correctX) {
         this.correctX = correctX;
+        this.correctX = correctX - toothHeights.getEstToothHeight();
     }
 
     public double getCorrectY() {
@@ -53,6 +57,7 @@ public class PuzzlePiece extends HBox{
 
     public void setCorrectY(double correctY) {
         this.correctY = correctY;
+       // this.correctY = correctY - toothHeights.getNordToothHeight();
     }
     
     public double getOrgTranslateX() {
@@ -107,8 +112,9 @@ public class PuzzlePiece extends HBox{
     public void setMovedOutFromFooter(boolean movedOutFromFooter) {
         this.movedOutFromFooter = movedOutFromFooter;
     }
+    // </editor-fold>
     
-    public PuzzlePiece(int id, int toothN, int toothS, int toothW, int toothE,ImageView image, double width, double height){
+    public PuzzlePiece(int id, ToothHeightsModel toothHeights,ImageView image, double width, double height){
         this.puzzle=image;
         this.puzzleId=id;
         this.getChildren().add(puzzle);
@@ -116,6 +122,7 @@ public class PuzzlePiece extends HBox{
         this.isOnRightPosition=false;
         this.puzzlePieceWidth=width;
         this.puzzlePieceHeight=height;
+        this.toothHeights=toothHeights;
         
        this.setOnMousePressed(new EventHandler<MouseEvent>(){
             @Override
@@ -141,9 +148,9 @@ public class PuzzlePiece extends HBox{
                     ((PuzzlePiece)(event.getSource())).setTranslateY(newTranslateY);
 
                     if(calculateDistanceToCorrectPosition()<50){
-                       // ((PuzzlePiece)(event.getSource())).setTranslateX(correctX);
-                       // ((PuzzlePiece)(event.getSource())).setTranslateY(correctY);
-                       // isOnRightPosition=true;
+                        ((PuzzlePiece)(event.getSource())).setTranslateX(correctX);
+                        ((PuzzlePiece)(event.getSource())).setTranslateY(correctY);
+                        isOnRightPosition=true;
                     }
                 }
             }

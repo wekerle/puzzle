@@ -90,6 +90,6 @@ public class PuzzleJavaFx extends Application{
                     
     private void initGameSession() 
     {
-        gameSession=new GameSessionView(new Image("/img/flip.jpg"));
+        gameSession=new GameSessionView(new Image("/img/test2.jpg"));
     }    
 }

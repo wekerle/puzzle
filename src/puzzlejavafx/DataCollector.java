@@ -5,7 +5,8 @@
  */
 package puzzlejavafx;
 
-import ViewModels.PuzzlePiece;
+import Models.PuzzlePiece;
+import Models.ToothHeightsModel;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -32,7 +33,7 @@ public class DataCollector {
     private Boolean[][] verticalTooths;
     private Boolean[][] horizontalTooths;
     private double nordSudToothHeight=0;
-    private double estWestHeight=0;
+    private double estWestToothHeight=0;
     
     public ArrayList<PuzzlePiece> getPuzzlePieces(Image image,int nrVertical, int nrHorizontal){
         initVerticalTooths(nrVertical,nrHorizontal);
@@ -44,13 +45,13 @@ public class DataCollector {
         double height=image.getHeight()/nrVertical;
         
         initNordSudToothHeight(width,height);
-       // initEstWestToothHeight(width,height);
+        initEstWestToothHeight(width,height);
         
         for(int i=0;i<nrHorizontal;i++){
             for(int j=0;j<nrVertical;j++){
                 ImageView imageView = new ImageView(image);                
                 clipPuzzlePiece(imageView, width, height,i,j,nrVertical,nrHorizontal);                                                            
-                PuzzlePiece puzzlePiece=new PuzzlePiece(IdGenerator.getNewId(),0, 0, 0, 0,imageView,width,height);
+                PuzzlePiece puzzlePiece=new PuzzlePiece(IdGenerator.getNewId(),getToothHeights(i,j),imageView,width,height);
                 
                 result.add(puzzlePiece);
             }
@@ -59,24 +60,44 @@ public class DataCollector {
         return result;
     }
     
-    @SuppressWarnings("empty-statement")
+    private ToothHeightsModel getToothHeights(int i, int j){
+        ToothHeightsModel result=new ToothHeightsModel();
+         if(j!=0){
+            if(!verticalTooths[i][j-1]){
+                
+            }else{
+                result.setNordToothHeight(nordSudToothHeight);
+            }
+        }
+       // if(j!=nrVertical-1){
+       // }
+        if(i!=0){
+            if(!horizontalTooths[i-1][j]){
+                
+            }else{
+                result.setEstToothHeight(estWestToothHeight);
+            }
+        }
+        return result;
+    }
+        
     private void initVerticalTooths(int nrVertical,int nrHorizontal){
         verticalTooths=new Boolean[nrVertical][nrHorizontal-1];
         
         for(int i=0;i<nrVertical;i++){
             for(int j=0;j<nrHorizontal-1;j++){
                 boolean bool = new Random().nextBoolean();
-               // verticalTooths[i][j]=bool;
+                verticalTooths[i][j]=bool;
             }
         }   
-        verticalTooths[0][0]=true;
-        verticalTooths[0][1]=false;
+       /* verticalTooths[0][0]=true;
+        verticalTooths[0][1]=true;
         
         verticalTooths[1][0]=true;
-        verticalTooths[1][1]=false;
+        verticalTooths[1][1]=true;
         
         verticalTooths[2][0]=true;
-       verticalTooths[2][1]=false;
+       verticalTooths[2][1]=true;*/
     }
     
     private void initOrizontalTooths(int nrVertical,int nrHorizontal){
@@ -85,22 +106,32 @@ public class DataCollector {
         for(int i=0;i<nrVertical-1;i++){
             for(int j=0;j<nrHorizontal;j++){
                 boolean bool = new Random().nextBoolean();
-               // horizontalLineTooths[i][j]=bool;
-                horizontalTooths[i][j]=false;
+                horizontalTooths[i][j]=bool;
             }
         }
+        
+      /*  horizontalTooths[0][0]=false;
+        horizontalTooths[0][1]=true;
+        horizontalTooths[0][2]=true;
+        
+        horizontalTooths[1][0]=false;
+        horizontalTooths[1][1]=false;
+        horizontalTooths[1][2]=true;*/
+        
     }
     
     private void clipPuzzlePiece(ImageView imageView, double width, double height,int i, int j,int nrVertical, int nrHorizontal){  
         Rectangle r = new Rectangle();
         r.setWidth(width);
         r.setHeight(height);
+       // r.setWidth(width+i);
+       // r.setHeight(height+j);
                 
-        //Rectangle2D r2 = new Rectangle2D(i*width,j*height,width,height);
-       //  imageView.setViewport(r2);
+       // Rectangle2D r2 = new Rectangle2D(i*width,j*height,width,height);
+       // imageView.setViewport(r2);
         
         Shape shape=null;
-        double testOffset=0;
+       /* double testOffset=0;
         if(j!=0){
             CubicCurve toothN = new CubicCurve();                       
             if(!verticalTooths[i][j-1]){    
@@ -113,10 +144,9 @@ public class DataCollector {
                 toothN.setEndX(width/2-width/8);
                 toothN.setEndY(0.0f);
                 
-               shape = Shape.subtract(r,toothN);               
+               shape = Shape.subtract(r,toothN);
             }else{
                testOffset=nordSudToothHeight;
-              // testOffset=35;
                 r.setY(0+testOffset);              
                 toothN.setStartX(width/2+width/8);
                 toothN.setStartY(0+testOffset);
@@ -127,11 +157,12 @@ public class DataCollector {
                 toothN.setEndX(width/2-width/8);
                 toothN.setEndY(0+testOffset);
                 
-                shape = Shape.union(r,toothN);               
+                shape = Shape.union(r,toothN);                 
             }
             
-            Rectangle2D r2 = new Rectangle2D(i*width,j*height-testOffset,width,height+testOffset);
-            imageView.setViewport(r2);           
+           // Rectangle2D r2 = new Rectangle2D(i*width,j*height-testOffset,width,height+testOffset);
+            Rectangle2D r2=new Rectangle2D(i*width,j*height-testOffset,width,height+nordSudToothHeight+testOffset);
+            //imageView.setViewport(r2);           
         }
                
         if(j!=nrVertical-1){
@@ -147,12 +178,12 @@ public class DataCollector {
                 toothS.setEndY(height+testOffset);
                 
                 Rectangle2D r2 = new Rectangle2D(i*width,j*height-testOffset,width,height+testOffset);
-                imageView.setViewport(r2);
+                //imageView.setViewport(r2);               
                 if(shape==null){
                     shape = Shape.subtract(r, toothS);
                 }else{
                     shape = Shape.subtract(shape, toothS);
-                }
+                }                
             }else{               
                 toothS.setStartX(width/2+width/8);
                 toothS.setStartY(height+testOffset);
@@ -164,44 +195,47 @@ public class DataCollector {
                 toothS.setEndY(height+testOffset);
                         
               //  testDouble=toothS.getLayoutBounds().getHeight();
-                Rectangle2D r3 = new Rectangle2D(i*width,j*height-testOffset,width,height+75);
-                imageView.setViewport(r3);
+               // Rectangle2D r3 = new Rectangle2D(i*width,j*height-testOffset,width,height+75);
+                Rectangle2D r3 = new Rectangle2D(i*width,j*height-testOffset,width,height+2*nordSudToothHeight);
+                //imageView.setViewport(r3);
                 if(shape==null){
                     shape = Shape.union(r, toothS);
                 }else{
                     shape = Shape.union(shape, toothS);
                 }
             }
-        }
-        /*
+            
+            Rectangle2D r3 = new Rectangle2D(i*width,j*height-testOffset,width,height+nordSudToothHeight+testOffset);
+            //imageView.setViewport(r3);
+        }*/
         double testOffset2=0;
         if(i!=0){
             CubicCurve toothE = new CubicCurve();
             if(!horizontalTooths[i-1][j]){
                 toothE.setStartX(0);
-                toothE.setStartY(height/2+height/8+testOffset);                
+                toothE.setStartY(height/2+height/8+testOffset2);                
                 toothE.setControlX1(width/2);
-                toothE.setControlY1(height/2+height/1.75+testOffset);
+                toothE.setControlY1(height/2+height/1.75+testOffset2);
                 toothE.setControlX2(width/2);
-                toothE.setControlY2(height/2-height/1.75+testOffset);                
+                toothE.setControlY2(height/2-height/1.75+testOffset2);                
                 toothE.setEndX(0);
-                toothE.setEndY(height/2-height/8+testOffset);
+                toothE.setEndY(height/2-height/8+testOffset2);
 
                 if(shape==null){
                     shape = Shape.subtract(r, toothE);
                 }else{
                     shape = Shape.subtract(shape, toothE);
                 }
-            }else{        
-                testOffset2=35;
-                r.setX(35);
-                toothE.setStartX(35);
+            }else{                      
+                testOffset2=estWestToothHeight;
+                r.setX(0+testOffset2);
+                toothE.setStartX(testOffset2);
                 toothE.setStartY(height/2+height/8);                
-                toothE.setControlX1(-width/2+35);
+                toothE.setControlX1(-width/2+testOffset2);
                 toothE.setControlY1(height/2+height/1.75);
-                toothE.setControlX2(-width/2+35);
+                toothE.setControlX2(-width/2+testOffset2);
                 toothE.setControlY2(height/2-height/1.75);                
-                toothE.setEndX(35);
+                toothE.setEndX(0+testOffset2);
                 toothE.setEndY(height/2-height/8);
 
                 if(shape==null){
@@ -211,8 +245,9 @@ public class DataCollector {
                 }
             }
             
-            Rectangle2D r3 = new Rectangle2D(i*width-testOffset2,j*height,width+testOffset2*2,height);
-            imageView.setViewport(r3);
+           // Rectangle2D r3 = new Rectangle2D(i*width-testOffset2,j*height,width+testOffset2*2,height);
+           Rectangle2D r3 = new Rectangle2D(i*width-testOffset2,j*height,width+testOffset2+estWestToothHeight,height);
+           imageView.setViewport(r3);
             
         }
         
@@ -235,15 +270,15 @@ public class DataCollector {
                 }
 
                 Rectangle2D r3 = new Rectangle2D(i*width-testOffset2,j*height,width+testOffset2,height);
-                imageView.setViewport(r3);
+               // imageView.setViewport(r3);
             }else{
-                toothV.setStartX(width);
+                toothV.setStartX(width+testOffset2);
                toothV.setStartY(height/2+height/8);                
-               toothV.setControlX1(width+width/2);
+               toothV.setControlX1(width+width/2+testOffset2);
                toothV.setControlY1(height/2+height/1.75);
-               toothV.setControlX2(width+width/2);
+               toothV.setControlX2(width+width/2+testOffset2);
                toothV.setControlY2(height/2-height/1.75);                
-               toothV.setEndX(width);
+               toothV.setEndX(width+testOffset2);
                toothV.setEndY(height/2-height/8);
                
                if(shape==null){
@@ -251,43 +286,20 @@ public class DataCollector {
                 }else{
                     shape = Shape.union(shape, toothV);
                 }
-            }
-            
-            Rectangle2D r3 = new Rectangle2D(i*width,j*height,width+35,height);
+                Rectangle2D r3 = new Rectangle2D(i*width-testOffset2,j*height,width+estWestToothHeight+testOffset2,height);
+               //imageView.setViewport(r3);
+            }     
+            Rectangle2D r3 = new Rectangle2D(i*width-testOffset2,j*height,width+estWestToothHeight+testOffset2,height);
             imageView.setViewport(r3);
-        }*/
-
-        //setViewPortImage(imageView, width, height, i, j, nrVertical, nrHorizontal);
-      //  if(j==1 && i==0)
-            imageView.setClip(shape); 
-    }
-    
-    private void setViewPortImage(ImageView imageView, double width, double height,int i, int j,int nrVertical, int nrHorizontal){
-        double testOffset=0;
-        if(j!=0){
-            if(!verticalTooths[i][j-1]){
-                
-            }else{
-                testOffset=35;
-            }
-            Rectangle2D r2 = new Rectangle2D(i*width,j*height-testOffset,width,height+testOffset);
-            imageView.setViewport(r2);
         }
+       
+        //Rectangle2D r3 = new Rectangle2D(i*width-testOffset2,j*height,width+estWestToothHeight+testOffset2,height);
+        //imageView.setViewport(r3);
         
-        if(j!=nrVertical-1){
-            if(verticalTooths[i][j]){
-            }else{
-                Rectangle2D r3 = new Rectangle2D(i*width,j*height,width,height+35);
-                imageView.setViewport(r3);
-            }
-        }
-
+       // Rectangle2D r2=new Rectangle2D(i*width,j*height-testOffset,width,height+nordSudToothHeight+testOffset);
+       // imageView.setViewport(r2);
         
-        if(i!=0){
-        }else{
-                   // Rectangle2D r = new Rectangle2D(i*width,j*height-35,width,height+35);
-       // imageView.setViewport(r);
-        }
+        imageView.setClip(shape); 
 
     }
 
@@ -303,9 +315,21 @@ public class DataCollector {
         tooth.setEndY(0.0f);
         
         nordSudToothHeight=tooth.getLayoutBounds().getHeight();
+      //  nordSudToothHeight-=0.5;
     }
 
-    private void initEstVestToothHeight(double width, double height) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void initEstWestToothHeight(double width, double height) {
+       CubicCurve tooth = new CubicCurve();
+        tooth.setStartX(width);
+        tooth.setStartY(height/2+height/8);                
+        tooth.setControlX1(width+width/2);
+        tooth.setControlY1(height/2+height/1.75);
+        tooth.setControlX2(width+width/2);
+        tooth.setControlY2(height/2-height/1.75);                
+        tooth.setEndX(width);
+        tooth.setEndY(height/2-height/8);
+        
+        estWestToothHeight=tooth.getLayoutBounds().getWidth();
+        //estWestToothHeight=35;
     }
 }
