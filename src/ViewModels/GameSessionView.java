@@ -35,7 +35,7 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
     private Image otherImage=new Image("img/refresh.png");
     private final double SPACE_BEETWEEN_PUZZLES=15;
     private int numberOfPuzzlesInFooter=4;
-    private int nrVertical=3,nrHorizontal=3;
+    private int nrVertical=5,nrHorizontal=3;
         
     private void populateContent(Image image)
     {   
@@ -87,7 +87,7 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
     }
 
     private void initPuzzlePieces(Image image){
-        ArrayList<PuzzlePiece> puzzlePieces=new DataCollector().getPuzzlePieces(image,nrVertical,nrHorizontal);
+        ArrayList<PuzzlePiece> puzzlePieces=new DataCollector(nrVertical,nrHorizontal).getPuzzlePieces(image);
 
         for(PuzzlePiece puzzle : puzzlePieces)
         {

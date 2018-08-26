@@ -32,14 +32,17 @@ import javafx.scene.shape.Shape;
 public class DataCollector {
     private Boolean[][] verticalTooths;
     private Boolean[][] horizontalTooths;
-    private double nordSudToothHeight=0;
-    private double estWestToothHeight=0;
-    private int testCounter=1;
+    private double nordSudToothHeight=0, estWestToothHeight=0;
+    private int nrVertical,nrHorizontal;
     
-    public ArrayList<PuzzlePiece> getPuzzlePieces(Image image,int nrVertical, int nrHorizontal){
+    public DataCollector(int nrVertical, int nrHorizontal){
+        this.nrHorizontal=nrHorizontal;
+        this.nrVertical=nrVertical;
         initVerticalTooths(nrVertical,nrHorizontal);
         initOrizontalTooths(nrVertical,nrHorizontal);
-                
+    }
+    
+    public ArrayList<PuzzlePiece> getPuzzlePieces(Image image){                      
         ArrayList<PuzzlePiece> result =new ArrayList<PuzzlePiece>();
         
         double width=image.getWidth()/nrHorizontal;
@@ -51,10 +54,7 @@ public class DataCollector {
         for(int i=0;i<nrHorizontal;i++){
             for(int j=0;j<nrVertical;j++){
                 ImageView imageView = new ImageView(image);                 
-                if(testCounter==5){                  
-                    int x=0;
-                }
-                testCounter++;
+                
                 clipPuzzlePiece(imageView, width, height,i,j,nrVertical,nrHorizontal);                                                            
                 PuzzlePiece puzzlePiece=new PuzzlePiece(IdGenerator.getNewId(),getToothHeights(i,j),imageView,width,height);
                 
@@ -74,8 +74,6 @@ public class DataCollector {
                 result.setNordToothHeight(nordSudToothHeight);
             }
         }
-       // if(j!=nrVertical-1){
-       // }
         if(i!=0){
             if(!horizontalTooths[i-1][j]){
                 
@@ -87,64 +85,34 @@ public class DataCollector {
     }
         
     private void initVerticalTooths(int nrVertical,int nrHorizontal){
-        verticalTooths=new Boolean[nrVertical][nrHorizontal-1];
+        verticalTooths=new Boolean[nrHorizontal][nrVertical];
         
-        for(int i=0;i<nrVertical;i++){
-            for(int j=0;j<nrHorizontal-1;j++){
+        for(int i=0;i<nrHorizontal;i++){
+            for(int j=0;j<nrVertical;j++){
                 boolean bool = new Random().nextBoolean();
                 verticalTooths[i][j]=bool;
-                verticalTooths[i][j]=false;
             }
         }   
-       /* verticalTooths[0][0]=true;
-        verticalTooths[0][1]=true;
-        
-        verticalTooths[1][0]=true;
-        verticalTooths[1][1]=true;
-        
-        verticalTooths[2][0]=true;
-       verticalTooths[2][1]=true;*/
     }
     
     private void initOrizontalTooths(int nrVertical,int nrHorizontal){
-        horizontalTooths=new Boolean[nrVertical-1][nrHorizontal];
+        horizontalTooths=new Boolean[nrHorizontal][nrVertical];
         
-        for(int i=0;i<nrVertical-1;i++){
-            for(int j=0;j<nrHorizontal;j++){
+        for(int i=0;i<nrHorizontal;i++){
+            for(int j=0;j<nrVertical;j++){
                 boolean bool = new Random().nextBoolean();
                 horizontalTooths[i][j]=bool;
-                horizontalTooths[i][j]=false;
             }
         }
-        
-      /*  horizontalTooths[0][0]=false;
-        horizontalTooths[0][1]=true;
-        horizontalTooths[0][2]=true;
-        
-        horizontalTooths[1][0]=false;
-        horizontalTooths[1][1]=false;
-        horizontalTooths[1][2]=true;*/
-        
     }
     
     private void clipPuzzlePiece(ImageView imageView, double width, double height,int i, int j,int nrVertical, int nrHorizontal){  
         Rectangle r = new Rectangle();
         r.setWidth(width);
         r.setHeight(height);
-                
-        //Rectangle2D r2 = new Rectangle2D(i*width,j*height,width,height);
-       //  imageView.setViewport(r2);
-              
-      // double toothSouthHeight=0;
-      // double toothNordHeight=0;
-       double toothEstHeight=0;
-       double tootWestHeight=0;
-       
-       
+            
         Shape shape=null;
-        
-       // double verticalOffset=0;       
-      //  double horizontalOffset=0;
+
         double verticalOffset=getVerticalOffset(i,j);       
         double horizontalOffset=getHorizontalOffset(i,j);
         double addtionalHight=0;
@@ -152,19 +120,19 @@ public class DataCollector {
         if(j!=0){
             CubicCurve toothN = new CubicCurve();                       
             if(!verticalTooths[i][j-1]){    
-                toothN.setStartX(width/2+width/8);
+                r.setX(horizontalOffset);
+                toothN.setStartX(width/2+width/8+horizontalOffset);
                 toothN.setStartY(0.0f);
-                toothN.setControlX1(width/2+width/1.75);
+                toothN.setControlX1(width/2+width/1.75+horizontalOffset);
                 toothN.setControlY1(height/2);
-                toothN.setControlX2(width/2-width/1.75);
+                toothN.setControlX2(width/2-width/1.75+horizontalOffset);
                 toothN.setControlY2(height/2);
-                toothN.setEndX(width/2-width/8);
+                toothN.setEndX(width/2-width/8+horizontalOffset);
                 toothN.setEndY(0.0f);
                 
                shape = Shape.subtract(r,toothN);               
             }else{
-              //  verticalOffset=37.5;
-                addtionalHight+=37.5;
+                addtionalHight+=nordSudToothHeight;
                 r.setX(horizontalOffset);
                 r.setY(0+verticalOffset);              
                 toothN.setStartX(width/2+width/8+horizontalOffset);
@@ -199,14 +167,15 @@ public class DataCollector {
                     shape = Shape.subtract(shape, toothS);
                 }
             }else{                 
-                addtionalHight+=37.5;
-                toothS.setStartX(width/2+width/8);
+                addtionalHight+=nordSudToothHeight;
+                r.setX(horizontalOffset);
+                toothS.setStartX(width/2+width/8+horizontalOffset);
                 toothS.setStartY(height+verticalOffset);
-                toothS.setControlX1(width/2+width/1.75);
+                toothS.setControlX1(width/2+width/1.75+horizontalOffset);
                 toothS.setControlY1(height+height/2+verticalOffset);
-                toothS.setControlX2(width/2-width/1.75);
+                toothS.setControlX2(width/2-width/1.75+horizontalOffset);
                 toothS.setControlY2(height+height/2+verticalOffset);
-                toothS.setEndX(width/2-width/8);
+                toothS.setEndX(width/2-width/8+horizontalOffset);
                 toothS.setEndY(height+verticalOffset);
                         
                 if(shape==null){
@@ -221,13 +190,13 @@ public class DataCollector {
             CubicCurve toothE = new CubicCurve();
             if(!horizontalTooths[i-1][j]){
                 toothE.setStartX(0);
-                toothE.setStartY(height/2+height/8);                
+                toothE.setStartY(height/2+height/8+verticalOffset);                
                 toothE.setControlX1(width/2);
-                toothE.setControlY1(height/2+height/1.75);
+                toothE.setControlY1(height/2+height/1.75+verticalOffset);
                 toothE.setControlX2(width/2);
-                toothE.setControlY2(height/2-height/1.75);                
+                toothE.setControlY2(height/2-height/1.75+verticalOffset);                
                 toothE.setEndX(0);
-                toothE.setEndY(height/2-height/8);
+                toothE.setEndY(height/2-height/8+verticalOffset);
 
                 if(shape==null){
                     shape = Shape.subtract(r, toothE);
@@ -235,16 +204,15 @@ public class DataCollector {
                     shape = Shape.subtract(shape, toothE);
                 }
             }else{        
-                addtionalWidth+=37.5;
-              //  horizontalOffset=37.5;
-                r.setX(37.5);
-                toothE.setStartX(37.5);
+                addtionalWidth+=estWestToothHeight;
+                r.setX(horizontalOffset);
+                toothE.setStartX(horizontalOffset);
                 toothE.setStartY(height/2+height/8+verticalOffset);                
-                toothE.setControlX1(-width/2+37.5);
+                toothE.setControlX1(-width/2+horizontalOffset);
                 toothE.setControlY1(height/2+height/1.75+verticalOffset);
-                toothE.setControlX2(-width/2+37.5);
+                toothE.setControlX2(-width/2+horizontalOffset);
                 toothE.setControlY2(height/2-height/1.75+verticalOffset);                
-                toothE.setEndX(37.5);
+                toothE.setEndX(horizontalOffset);
                 toothE.setEndY(height/2-height/8+verticalOffset);
 
                 if(shape==null){
@@ -259,13 +227,13 @@ public class DataCollector {
             CubicCurve toothV = new CubicCurve();
             if(horizontalTooths[i][j]){
                toothV.setStartX(width+horizontalOffset);
-               toothV.setStartY(height/2+height/8+addtionalHight);                
+               toothV.setStartY(height/2+height/8+verticalOffset);                
                toothV.setControlX1(width/2+horizontalOffset);
-               toothV.setControlY1(height/2+height/1.75+addtionalHight);
+               toothV.setControlY1(height/2+height/1.75+verticalOffset);
                toothV.setControlX2(width/2+horizontalOffset);
-               toothV.setControlY2(height/2-height/1.75+addtionalHight);                
+               toothV.setControlY2(height/2-height/1.75+verticalOffset);                
                toothV.setEndX(width+horizontalOffset);
-               toothV.setEndY(height/2-height/8+addtionalHight);
+               toothV.setEndY(height/2-height/8+verticalOffset);
                r.setX(horizontalOffset);
                 if(shape==null){
                     shape = Shape.subtract(r, toothV);
@@ -273,15 +241,15 @@ public class DataCollector {
                     shape = Shape.subtract(shape, toothV);
                 }
             }else{
-               addtionalWidth+=37.5;
+               addtionalWidth+=estWestToothHeight;
                toothV.setStartX(width+horizontalOffset);
-               toothV.setStartY(height/2+height/8);                
+               toothV.setStartY(height/2+height/8+verticalOffset);                
                toothV.setControlX1(width+width/2+horizontalOffset);
-               toothV.setControlY1(height/2+height/1.75);
+               toothV.setControlY1(height/2+height/1.75+verticalOffset);
                toothV.setControlX2(width+width/2+horizontalOffset);
-               toothV.setControlY2(height/2-height/1.75);                
+               toothV.setControlY2(height/2-height/1.75+verticalOffset);                
                toothV.setEndX(width+horizontalOffset);
-               toothV.setEndY(height/2-height/8);
+               toothV.setEndY(height/2-height/8+verticalOffset);
                
                if(shape==null){
                     shape = Shape.union(r, toothV);
@@ -290,23 +258,17 @@ public class DataCollector {
                 }
             }            
         }
-      
-        Rectangle2D r2 = new Rectangle2D(i*width,j*height-verticalOffset,width,height+addtionalHight);
-      //  imageView.setViewport(r2);
-       // Rectangle2D r3 = new Rectangle2D(i*width-horizontalOffset,j*height,width+addtionalWidth,height);
-       // imageView.setViewport(r3);
         
         Rectangle2D viewPort = new Rectangle2D(i*width-horizontalOffset,j*height-verticalOffset,width+addtionalWidth,height+addtionalHight);
         imageView.setViewport(viewPort);
         
-        //if(testCounter!=6)
         imageView.setClip(shape); 
     }
     
     private double getVerticalOffset(int i, int j){
         if(j!=0){
             if(verticalTooths[i][j-1]){
-                return 37.5;
+                return nordSudToothHeight;
             }
         }
         return 0;
@@ -315,7 +277,7 @@ public class DataCollector {
     private double getHorizontalOffset(int i, int j){
         if(i!=0){
             if(horizontalTooths[i-1][j]){
-                return 37.5;
+                return estWestToothHeight;
             }
         }
         return 0;
@@ -333,7 +295,6 @@ public class DataCollector {
         tooth.setEndY(0.0f);
         
         nordSudToothHeight=tooth.getLayoutBounds().getHeight();
-      //  nordSudToothHeight-=0.5;
     }
 
     private void initEstWestToothHeight(double width, double height) {
@@ -348,6 +309,5 @@ public class DataCollector {
         tooth.setEndY(height/2-height/8);
         
         estWestToothHeight=tooth.getLayoutBounds().getWidth();
-        //estWestToothHeight=35;
     }
 }

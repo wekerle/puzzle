@@ -48,7 +48,7 @@ public class PuzzlePiece extends HBox{
 
     public void setCorrectX(double correctX) {
         this.correctX = correctX;
-       // this.correctX = correctX - toothHeights.getEstToothHeight();
+        this.correctX = correctX - toothHeights.getEstToothHeight();
     }
 
     public double getCorrectY() {
@@ -57,7 +57,7 @@ public class PuzzlePiece extends HBox{
 
     public void setCorrectY(double correctY) {
         this.correctY = correctY;
-       // this.correctY = correctY - toothHeights.getNordToothHeight();
+        this.correctY = correctY - toothHeights.getNordToothHeight();
     }
     
     public double getOrgTranslateX() {
@@ -131,7 +131,6 @@ public class PuzzlePiece extends HBox{
                 orgSceneY=event.getSceneY();
                 orgTranslateX = ((PuzzlePiece)(event.getSource())).getTranslateX();
                 orgTranslateY = ((PuzzlePiece)(event.getSource())).getTranslateY();
-                //System.out.println(orgSceneX+","+orgSceneY+","+orgTranslateX+","+orgTranslateY);
             }
        });
        
@@ -148,9 +147,9 @@ public class PuzzlePiece extends HBox{
                     ((PuzzlePiece)(event.getSource())).setTranslateY(newTranslateY);
 
                     if(calculateDistanceToCorrectPosition()<50){
-                     //   ((PuzzlePiece)(event.getSource())).setTranslateX(correctX);
-                      //  ((PuzzlePiece)(event.getSource())).setTranslateY(correctY);
-                      //  isOnRightPosition=true;
+                        ((PuzzlePiece)(event.getSource())).setTranslateX(correctX);
+                        ((PuzzlePiece)(event.getSource())).setTranslateY(correctY);
+                        isOnRightPosition=true;
                     }
                 }
             }
