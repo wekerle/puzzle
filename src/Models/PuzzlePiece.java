@@ -112,6 +112,11 @@ public class PuzzlePiece extends HBox{
     public void setMovedOutFromFooter(boolean movedOutFromFooter) {
         this.movedOutFromFooter = movedOutFromFooter;
     }
+    
+    public boolean getIsOnRightPosition() {
+        return isOnRightPosition;
+    }
+
     // </editor-fold>
     
     public PuzzlePiece(int id, ToothHeightsModel toothHeights,ImageView image, double width, double height){
@@ -131,6 +136,7 @@ public class PuzzlePiece extends HBox{
                 orgSceneY=event.getSceneY();
                 orgTranslateX = ((PuzzlePiece)(event.getSource())).getTranslateX();
                 orgTranslateY = ((PuzzlePiece)(event.getSource())).getTranslateY();
+                 System.out.println(orgSceneX+","+orgSceneY+","+orgTranslateX+","+orgTranslateY);
             }
        });
        
@@ -146,6 +152,7 @@ public class PuzzlePiece extends HBox{
                     ((PuzzlePiece)(event.getSource())).setTranslateX(newTranslateX);
                     ((PuzzlePiece)(event.getSource())).setTranslateY(newTranslateY);
 
+                    System.out.println(orgSceneX+","+orgSceneY+","+event.getSceneX()+","+event.getSceneY());
                     if(calculateDistanceToCorrectPosition()<50){
                         ((PuzzlePiece)(event.getSource())).setTranslateX(correctX);
                         ((PuzzlePiece)(event.getSource())).setTranslateY(correctY);

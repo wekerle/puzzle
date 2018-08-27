@@ -5,309 +5,111 @@
  */
 package puzzlejavafx;
 
-import Models.PuzzlePiece;
-import Models.ToothHeightsModel;
+import Models.LevelModel;
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.CubicCurve;
-import javafx.scene.shape.CubicCurveTo;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 
+
+//loveercase es trim a similarty setbe
+//test similarity
 /**
  *
- * @author tibor.wekerle
+ * @author Ronaldo
  */
-public class DataCollector {
-    private Boolean[][] verticalTooths;
-    private Boolean[][] horizontalTooths;
-    private double nordSudToothHeight=0, estWestToothHeight=0;
-    private int nrVertical,nrHorizontal;
+public class DataCollector
+{
+    private ArrayList<LevelModel> levels=new ArrayList<LevelModel>();
     
-    public DataCollector(int nrVertical, int nrHorizontal){
-        this.nrHorizontal=nrHorizontal;
-        this.nrVertical=nrVertical;
-        initVerticalTooths(nrVertical,nrHorizontal);
-        initOrizontalTooths(nrVertical,nrHorizontal);
+    public DataCollector()
+    {
+        constructLevels();
     }
     
-    public ArrayList<PuzzlePiece> getPuzzlePieces(Image image){                      
-        ArrayList<PuzzlePiece> result =new ArrayList<PuzzlePiece>();
-        
-        double width=image.getWidth()/nrHorizontal;
-        double height=image.getHeight()/nrVertical;
-        
-        initNordSudToothHeight(width,height);
-        initEstWestToothHeight(width,height);
-               
-        for(int i=0;i<nrHorizontal;i++){
-            for(int j=0;j<nrVertical;j++){
-                ImageView imageView = new ImageView(image);                 
-                
-                clipPuzzlePiece(imageView, width, height,i,j,nrVertical,nrHorizontal);                                                            
-                PuzzlePiece puzzlePiece=new PuzzlePiece(IdGenerator.getNewId(),getToothHeights(i,j),imageView,width,height);
-                
-                result.add(puzzlePiece);
-            }
-        }
-        
-        return result;
-    }
-    
-    private ToothHeightsModel getToothHeights(int i, int j){
-        ToothHeightsModel result=new ToothHeightsModel();
-         if(j!=0){
-            if(!verticalTooths[i][j-1]){
-                
-            }else{
-                result.setNordToothHeight(nordSudToothHeight);
-            }
-        }
-        if(i!=0){
-            if(!horizontalTooths[i-1][j]){
-                
-            }else{
-                result.setEstToothHeight(estWestToothHeight);
-            }
-        }
-        return result;
-    }
-        
-    private void initVerticalTooths(int nrVertical,int nrHorizontal){
-        verticalTooths=new Boolean[nrHorizontal][nrVertical];
-        
-        for(int i=0;i<nrHorizontal;i++){
-            for(int j=0;j<nrVertical;j++){
-                boolean bool = new Random().nextBoolean();
-                verticalTooths[i][j]=bool;
-            }
-        }   
-    }
-    
-    private void initOrizontalTooths(int nrVertical,int nrHorizontal){
-        horizontalTooths=new Boolean[nrHorizontal][nrVertical];
-        
-        for(int i=0;i<nrHorizontal;i++){
-            for(int j=0;j<nrVertical;j++){
-                boolean bool = new Random().nextBoolean();
-                horizontalTooths[i][j]=bool;
-            }
-        }
-    }
-    
-    private void clipPuzzlePiece(ImageView imageView, double width, double height,int i, int j,int nrVertical, int nrHorizontal){  
-        Rectangle r = new Rectangle();
-        r.setWidth(width);
-        r.setHeight(height);
-            
-        Shape shape=null;
+    private void constructLevels()
+    {
+        String imagePath1="/img/flip.jpg";
+        LevelModel level1=new LevelModel(imagePath1, 1, 1,3,3);
+        levels.add(level1);
 
-        double verticalOffset=getVerticalOffset(i,j);       
-        double horizontalOffset=getHorizontalOffset(i,j);
-        double addtionalHight=0;
-        double addtionalWidth=0;
-        if(j!=0){
-            CubicCurve toothN = new CubicCurve();                       
-            if(!verticalTooths[i][j-1]){    
-                r.setX(horizontalOffset);
-                toothN.setStartX(width/2+width/8+horizontalOffset);
-                toothN.setStartY(0.0f);
-                toothN.setControlX1(width/2+width/1.75+horizontalOffset);
-                toothN.setControlY1(height/2);
-                toothN.setControlX2(width/2-width/1.75+horizontalOffset);
-                toothN.setControlY2(height/2);
-                toothN.setEndX(width/2-width/8+horizontalOffset);
-                toothN.setEndY(0.0f);
-                
-               shape = Shape.subtract(r,toothN);               
-            }else{
-                addtionalHight+=nordSudToothHeight;
-                r.setX(horizontalOffset);
-                r.setY(0+verticalOffset);              
-                toothN.setStartX(width/2+width/8+horizontalOffset);
-                toothN.setStartY(0+verticalOffset);
-                toothN.setControlX1(width/2+width/1.75+horizontalOffset);
-                toothN.setControlY1(-height/2+verticalOffset);
-                toothN.setControlX2(width/2-width/1.75+horizontalOffset);
-                toothN.setControlY2(-height/2+verticalOffset);
-                toothN.setEndX(width/2-width/8+horizontalOffset);
-                toothN.setEndY(0+verticalOffset);
-                
-                shape = Shape.union(r,toothN);               
-            }                      
-        }
-               
-        if(j!=nrVertical-1){
-            CubicCurve toothS = new CubicCurve();            
-            if(verticalTooths[i][j]){
-                r.setX(horizontalOffset);
-                toothS.setStartX(width/2+width/8+horizontalOffset);
-                toothS.setStartY(height+verticalOffset);
-                toothS.setControlX1(width/2+width/1.75+horizontalOffset);
-                toothS.setControlY1(height-height/2+verticalOffset);
-                toothS.setControlX2(width/2-width/1.75+horizontalOffset);
-                toothS.setControlY2(height-height/2+verticalOffset);
-                toothS.setEndX(width/2-width/8+horizontalOffset);
-                toothS.setEndY(height+verticalOffset);
-                
-                if(shape==null){
-                    shape = Shape.subtract(r, toothS);
-                }else{
-                    shape = Shape.subtract(shape, toothS);
-                }
-            }else{                 
-                addtionalHight+=nordSudToothHeight;
-                r.setX(horizontalOffset);
-                toothS.setStartX(width/2+width/8+horizontalOffset);
-                toothS.setStartY(height+verticalOffset);
-                toothS.setControlX1(width/2+width/1.75+horizontalOffset);
-                toothS.setControlY1(height+height/2+verticalOffset);
-                toothS.setControlX2(width/2-width/1.75+horizontalOffset);
-                toothS.setControlY2(height+height/2+verticalOffset);
-                toothS.setEndX(width/2-width/8+horizontalOffset);
-                toothS.setEndY(height+verticalOffset);
-                        
-                if(shape==null){
-                    shape = Shape.union(r, toothS);
-                }else{
-                    shape = Shape.union(shape, toothS);
-                }
-            }
-        }
-                        
-        if(i!=0){
-            CubicCurve toothE = new CubicCurve();
-            if(!horizontalTooths[i-1][j]){
-                toothE.setStartX(0);
-                toothE.setStartY(height/2+height/8+verticalOffset);                
-                toothE.setControlX1(width/2);
-                toothE.setControlY1(height/2+height/1.75+verticalOffset);
-                toothE.setControlX2(width/2);
-                toothE.setControlY2(height/2-height/1.75+verticalOffset);                
-                toothE.setEndX(0);
-                toothE.setEndY(height/2-height/8+verticalOffset);
-
-                if(shape==null){
-                    shape = Shape.subtract(r, toothE);
-                }else{
-                    shape = Shape.subtract(shape, toothE);
-                }
-            }else{        
-                addtionalWidth+=estWestToothHeight;
-                r.setX(horizontalOffset);
-                toothE.setStartX(horizontalOffset);
-                toothE.setStartY(height/2+height/8+verticalOffset);                
-                toothE.setControlX1(-width/2+horizontalOffset);
-                toothE.setControlY1(height/2+height/1.75+verticalOffset);
-                toothE.setControlX2(-width/2+horizontalOffset);
-                toothE.setControlY2(height/2-height/1.75+verticalOffset);                
-                toothE.setEndX(horizontalOffset);
-                toothE.setEndY(height/2-height/8+verticalOffset);
-
-                if(shape==null){
-                        shape = Shape.union(r, toothE);
-                }else{
-                    shape = Shape.union(shape, toothE);
-                }
-            }            
-        }
+        String imagePath2="/img/flip2.jpg";
+        LevelModel level2=new LevelModel(imagePath2, 2, 2,3,4);
+        levels.add(level2);
         
-        if(i!=nrHorizontal-1){
-            CubicCurve toothV = new CubicCurve();
-            if(horizontalTooths[i][j]){
-               toothV.setStartX(width+horizontalOffset);
-               toothV.setStartY(height/2+height/8+verticalOffset);                
-               toothV.setControlX1(width/2+horizontalOffset);
-               toothV.setControlY1(height/2+height/1.75+verticalOffset);
-               toothV.setControlX2(width/2+horizontalOffset);
-               toothV.setControlY2(height/2-height/1.75+verticalOffset);                
-               toothV.setEndX(width+horizontalOffset);
-               toothV.setEndY(height/2-height/8+verticalOffset);
-               r.setX(horizontalOffset);
-                if(shape==null){
-                    shape = Shape.subtract(r, toothV);
-                }else{
-                    shape = Shape.subtract(shape, toothV);
-                }
-            }else{
-               addtionalWidth+=estWestToothHeight;
-               toothV.setStartX(width+horizontalOffset);
-               toothV.setStartY(height/2+height/8+verticalOffset);                
-               toothV.setControlX1(width+width/2+horizontalOffset);
-               toothV.setControlY1(height/2+height/1.75+verticalOffset);
-               toothV.setControlX2(width+width/2+horizontalOffset);
-               toothV.setControlY2(height/2-height/1.75+verticalOffset);                
-               toothV.setEndX(width+horizontalOffset);
-               toothV.setEndY(height/2-height/8+verticalOffset);
-               
-               if(shape==null){
-                    shape = Shape.union(r, toothV);
-                }else{
-                    shape = Shape.union(shape, toothV);
-                }
-            }            
-        }
+        String imagePath3="/img/flip3.jpg";
+        LevelModel level3=new LevelModel(imagePath3, 3, 3,5,3);
+        levels.add(level3);
         
-        Rectangle2D viewPort = new Rectangle2D(i*width-horizontalOffset,j*height-verticalOffset,width+addtionalWidth,height+addtionalHight);
-        imageView.setViewport(viewPort);
+        String imagePath4="/img/test1.jpg";
+        LevelModel level4=new LevelModel(imagePath4, 4, 4,3,3);
+        levels.add(level4);
         
-        imageView.setClip(shape); 
+        String imagePath5="/img/test2.jpg";
+        LevelModel level5=new LevelModel(imagePath5, 5, 5,3,3);
+        levels.add(level5);
+        
+        String imagePath6="";
+        LevelModel level6=new LevelModel(imagePath6, 6, 6,3,3);
+        levels.add(level6);
+        
+        String imagePath7="";
+        LevelModel level7=new LevelModel(imagePath7, 7, 7,3,3);
+        levels.add(level7);
+        
+        String imagePath8="";
+        LevelModel level8=new LevelModel(imagePath8, 8, 8,3,3);
+        levels.add(level8);
+        
+        String imagePath9="";
+        LevelModel level9=new LevelModel(imagePath9, 9, 9,3,3);
+        levels.add(level9);
+        
+        String imagePath10="";
+        LevelModel level10=new LevelModel(imagePath10, 10, 10,3,3);
+        levels.add(level10);
+        
+        String imagePath11="";
+        LevelModel level11=new LevelModel(imagePath11, 11, 11,3,3);
+        levels.add(level11);
+        
+        String imagePath12="";
+        LevelModel level12=new LevelModel(imagePath12, 12, 12,3,3);
+        levels.add(level12);
+        
+        String imagePath13="";
+        LevelModel level13=new LevelModel(imagePath13, 13, 13,3,3);
+        levels.add(level13);
+        
+        String imagePath14="";
+        LevelModel level14=new LevelModel(imagePath14, 14, 14,3,3);
+        levels.add(level14);
+        
+        String imagePath15="";
+        LevelModel level15=new LevelModel(imagePath15, 15, 15,3,3);
+        levels.add(level15);
+        
+        String imagePath16="";
+        LevelModel level16=new LevelModel(imagePath16, 16, 16,3,3);
+        levels.add(level16);
+        
+        String imagePath17="";
+        LevelModel level17=new LevelModel(imagePath17, 17, 17,3,3);
+        levels.add(level17);
+        
+        String imagePath18="";
+        LevelModel level18=new LevelModel(imagePath18, 18, 18,3,3);
+        levels.add(level18);
+        
+        String imagePath19="";
+        LevelModel level19=new LevelModel(imagePath19, 19, 19,3,3);
+        levels.add(level19);
+        
+        String imagePath20="";
+        LevelModel level20=new LevelModel(imagePath20, 20, 20,3,3);
+        levels.add(level20);                   
     }
     
-    private double getVerticalOffset(int i, int j){
-        if(j!=0){
-            if(verticalTooths[i][j-1]){
-                return nordSudToothHeight;
-            }
-        }
-        return 0;
+    public ArrayList<LevelModel>  getLevels()
+    {
+        return levels;
     }
     
-    private double getHorizontalOffset(int i, int j){
-        if(i!=0){
-            if(horizontalTooths[i-1][j]){
-                return estWestToothHeight;
-            }
-        }
-        return 0;
-    }
-    
-    private void initNordSudToothHeight(double width, double height) {
-        CubicCurve tooth = new CubicCurve();
-        tooth.setStartX(width/2+width/8);
-        tooth.setStartY(0.0f);
-        tooth.setControlX1(width/2+width/1.75);
-        tooth.setControlY1(height/2);
-        tooth.setControlX2(width/2-width/1.75);
-        tooth.setControlY2(height/2);
-        tooth.setEndX(width/2-width/8);
-        tooth.setEndY(0.0f);
-        
-        nordSudToothHeight=tooth.getLayoutBounds().getHeight();
-    }
-
-    private void initEstWestToothHeight(double width, double height) {
-       CubicCurve tooth = new CubicCurve();
-        tooth.setStartX(width);
-        tooth.setStartY(height/2+height/8);                
-        tooth.setControlX1(width+width/2);
-        tooth.setControlY1(height/2+height/1.75);
-        tooth.setControlX2(width+width/2);
-        tooth.setControlY2(height/2-height/1.75);                
-        tooth.setEndX(width);
-        tooth.setEndY(height/2-height/8);
-        
-        estWestToothHeight=tooth.getLayoutBounds().getWidth();
-    }
 }

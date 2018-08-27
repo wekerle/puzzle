@@ -5,7 +5,9 @@
  */
 package ViewModels;
 
+import Listeners.LevelFinishedEventListener;
 import Listeners.PuzzlePositionChangeListener;
+import Models.LevelModel;
 import Models.PuzzlePiece;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +22,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import puzzlejavafx.DataCollector;
+import puzzlejavafx.PuzzleCutter;
 
 /**
  *
@@ -34,8 +36,8 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
     private Pane mainBoard=new Pane();
     private Image otherImage=new Image("img/refresh.png");
     private final double SPACE_BEETWEEN_PUZZLES=15;
-    private int numberOfPuzzlesInFooter=4;
-    private int nrVertical=5,nrHorizontal=3;
+    private LevelModel level=null;
+    private LevelFinishedEventListener levelFinishedEvent=null;
         
     private void populateContent(Image image)
     {   
@@ -57,7 +59,8 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
             puzzle.setTranslateX((i-1)*(puzzle.getPuzzlePieceWidth()+SPACE_BEETWEEN_PUZZLES));
             puzzle.setIsVisible(isVisible);
             
-            if(i==numberOfPuzzlesInFooter){
+            //todo calculat "5", now is hardcoded 
+            if(i==5){
                isVisible=false;
                i=1;
             }
@@ -75,7 +78,8 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
         
     private void initCenterContent(Image image) 
     {                 
-        initPuzzlePieces(image);
+        ArrayList<PuzzlePiece> puzzlePieces=new PuzzleCutter(level.getNrVertical(),level.getNrHorizontal()).getPuzzlePieces(image);
+        initPuzzlePieces(puzzlePieces);
         
         mainBoard.setMinWidth(image.getWidth());
         mainBoard.setMinHeight(image.getHeight());
@@ -86,8 +90,7 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
         center.getStyleClass().add("center");
     }
 
-    private void initPuzzlePieces(Image image){
-        ArrayList<PuzzlePiece> puzzlePieces=new DataCollector(nrVertical,nrHorizontal).getPuzzlePieces(image);
+    private void initPuzzlePieces(ArrayList<PuzzlePiece> puzzlePieces){
 
         for(PuzzlePiece puzzle : puzzlePieces)
         {
@@ -114,6 +117,16 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
         return result;
     }
     
+    private void checkWin(){
+        for (HashMap.Entry item : puzzlePiecesMap.entrySet()){
+            PuzzlePiece puzzlePiece=(PuzzlePiece)item.getValue();
+            if(!puzzlePiece.getIsOnRightPosition()){
+                return;
+            }
+        }
+        levelFinishedEvent.levelFinished(this.level);
+    }
+    
     @Override
     public void positionChanged(PuzzlePiece puzzle) {        
         boolean puzzleIsOutFromFooter=puzzleIsOutFromFooter(puzzle);
@@ -130,11 +143,19 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
                     break;
                 }
             }
+            checkWin();
         }     
     }
     
-    public GameSessionView(Image image)
+    public GameSessionView(LevelModel level,LevelFinishedEventListener levelFinishedEvent)
     {
+        //---next line is only test--
+        int numberOfPuzzlesInFooter=5;
+        
+        this.levelFinishedEvent=levelFinishedEvent;
+        Image image=new Image(level.getImagePath());
+        this.level=level;
+        
         populateContent(image);       
     }   
     
@@ -153,7 +174,7 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
             puzzle.setCorrectY(correctY+i*puzzle.getPuzzlePieceHeight());
             
             i++;
-            if(i==nrVertical){
+            if(i==level.getNrVertical()){
                j++;
                i=0;
             }

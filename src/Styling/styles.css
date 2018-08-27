@@ -20,3 +20,11 @@
     -fx-border-color: green;
     -fx-padding: 20 10 10 20;
 }
+
+.grid {
+    -fx-background-color: #FDD0E1;
+}
+
+.cursor-hand {
+    -fx-cursor: hand;
+}
