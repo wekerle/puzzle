@@ -27,7 +27,7 @@ public class DataCollector
     private void constructLevels()
     {
         String imagePath1="/img/flip.jpg";
-        LevelModel level1=new LevelModel(imagePath1, 1, 1,3,3);
+        LevelModel level1=new LevelModel(imagePath1, 1, 1,5,5);
         levels.add(level1);
 
         String imagePath2="/img/flip2.jpg";

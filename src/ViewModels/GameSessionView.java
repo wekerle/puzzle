@@ -11,12 +11,17 @@ import Models.LevelModel;
 import Models.PuzzlePiece;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -30,7 +35,7 @@ import puzzlejavafx.PuzzleCutter;
  */
 public class GameSessionView extends BorderPane implements PuzzlePositionChangeListener{
     
-    private HashMap<Integer,PuzzlePiece> puzzlePiecesMap=new HashMap<Integer,PuzzlePiece>();
+    private HashMap<Integer,PuzzlePiece> puzzlePiecesMap=new LinkedHashMap<Integer,PuzzlePiece>();
     private HBox footer=new HBox();
     private GridPane center=new GridPane();
     private Pane mainBoard=new Pane();
@@ -38,6 +43,7 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
     private final double SPACE_BEETWEEN_PUZZLES=15;
     private LevelModel level=null;
     private LevelFinishedEventListener levelFinishedEvent=null;
+    private int puzzlesInFooter;
         
     private void populateContent(Image image)
     {   
@@ -46,7 +52,7 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
         initCenterContent(image);
         initBottomContent();
     }
-    
+        
     private void initBottomContent(){      
         ImageView otherButton=new ImageView(otherImage);
         VBox otherButtonContainer=new VBox();
@@ -59,23 +65,34 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
             puzzle.setTranslateX((i-1)*(puzzle.getPuzzlePieceWidth()+SPACE_BEETWEEN_PUZZLES));
             puzzle.setIsVisible(isVisible);
             
-            //todo calculat "5", now is hardcoded 
-            if(i==5){
+            if(i==puzzlesInFooter){
                isVisible=false;
                i=1;
             }
             puzzlePiecesContainer.getChildren().add(puzzle);
             i++;
         }
-        
+        otherButtonContainer.getStyleClass().add("cursor-hand");
         otherButtonContainer.getChildren().add(otherButton);
         otherButtonContainer.setAlignment(Pos.CENTER);
+        otherButtonContainer.setOnMouseClicked(new EventHandler<MouseEvent>()
+        {
+
+            @Override
+            public void handle(MouseEvent event) {
+                showOtherPuzzles();
+            }
+        });
         footer.getChildren().add(otherButtonContainer);
         footer.getChildren().add(puzzlePiecesContainer);
         
         footer.getStyleClass().add("footer");
     }
+    
+    private void showOtherPuzzles(){
         
+    } 
+    
     private void initCenterContent(Image image) 
     {                 
         ArrayList<PuzzlePiece> puzzlePieces=new PuzzleCutter(level.getNrVertical(),level.getNrHorizontal()).getPuzzlePieces(image);
@@ -105,12 +122,22 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
         Bounds footerBoundsInScene = footer.getBoundsInParent();
         Bounds puzzleBoundsInFooter =  puzzle.getBoundsInParent();
         Insets footerPadding=footer.getPadding();
-        this.footer.getBoundsInParent();
         
         double foooterInSceneMinY=footerBoundsInScene.getMinY(); 
         double puzzleInSceneMaxY=foooterInSceneMinY + puzzleBoundsInFooter.getMaxY()+footerPadding.getTop();
         
         if(puzzleInSceneMaxY>=foooterInSceneMinY){
+            result=false;
+        }
+        
+        return result;
+    }
+    
+    private boolean puzzleWasInFooter(PuzzlePiece puzzle){
+        boolean result=true;
+                
+        double puzzleOrgTranslateY=puzzle.getOrgSceneY();      
+        if(puzzleOrgTranslateY<=footer.getLayoutY()){
             result=false;
         }
         
@@ -130,32 +157,34 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
     @Override
     public void positionChanged(PuzzlePiece puzzle) {        
         boolean puzzleIsOutFromFooter=puzzleIsOutFromFooter(puzzle);
+        boolean puzzleWasInFooter=puzzleWasInFooter(puzzle);
         //if not left completly the footer bounds
         if(!puzzleIsOutFromFooter){
             puzzle.setTranslateX(puzzle.getOrgTranslateX());
             puzzle.setTranslateY(puzzle.getOrgTranslateY());  
         }else{
-            for (HashMap.Entry item : puzzlePiecesMap.entrySet()){
-                PuzzlePiece puzzlePiece=(PuzzlePiece)item.getValue();
-                if(!puzzlePiece.isVisible()){
-                    puzzlePiece.setIsVisible(true);
-                    puzzlePiece.setTranslateX(puzzle.getOrgTranslateX());
-                    break;
+            if(puzzleWasInFooter){
+                for (HashMap.Entry item : puzzlePiecesMap.entrySet()){
+                    PuzzlePiece puzzlePiece=(PuzzlePiece)item.getValue();
+                    if(!puzzlePiece.isVisible()){
+                        puzzlePiece.setIsVisible(true);
+                        puzzlePiece.setTranslateX(puzzle.getOrgTranslateX());
+                        break;
+                    }
                 }
+                checkWin();
             }
-            checkWin();
         }     
     }
     
-    public GameSessionView(LevelModel level,LevelFinishedEventListener levelFinishedEvent)
-    {
-        //---next line is only test--
-        int numberOfPuzzlesInFooter=5;
-        
+    public GameSessionView(LevelModel level,LevelFinishedEventListener levelFinishedEvent, double paneWidth)
+    {    
         this.levelFinishedEvent=levelFinishedEvent;
         Image image=new Image(level.getImagePath());
         this.level=level;
-        
+        double puzzlePieceWidth=image.getWidth()/level.getNrHorizontal();
+        this.puzzlesInFooter=(int)((paneWidth-100)/(puzzlePieceWidth+SPACE_BEETWEEN_PUZZLES));
+        this.puzzlesInFooter=5;
         populateContent(image);       
     }   
     

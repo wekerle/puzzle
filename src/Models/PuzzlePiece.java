@@ -117,6 +117,10 @@ public class PuzzlePiece extends HBox{
         return isOnRightPosition;
     }
 
+    public double getOrgSceneY() {
+        return orgSceneY;
+    }
+
     // </editor-fold>
     
     public PuzzlePiece(int id, ToothHeightsModel toothHeights,ImageView image, double width, double height){
@@ -132,11 +136,12 @@ public class PuzzlePiece extends HBox{
        this.setOnMousePressed(new EventHandler<MouseEvent>(){
             @Override
             public void handle(MouseEvent event) {
+                PuzzlePiece.this.toFront();
                 orgSceneX=event.getSceneX();
                 orgSceneY=event.getSceneY();
                 orgTranslateX = ((PuzzlePiece)(event.getSource())).getTranslateX();
                 orgTranslateY = ((PuzzlePiece)(event.getSource())).getTranslateY();
-                 System.out.println(orgSceneX+","+orgSceneY+","+orgTranslateX+","+orgTranslateY);
+                // System.out.println(orgSceneX+","+orgSceneY+","+orgTranslateX+","+orgTranslateY);
             }
        });
        
@@ -152,7 +157,7 @@ public class PuzzlePiece extends HBox{
                     ((PuzzlePiece)(event.getSource())).setTranslateX(newTranslateX);
                     ((PuzzlePiece)(event.getSource())).setTranslateY(newTranslateY);
 
-                    System.out.println(orgSceneX+","+orgSceneY+","+event.getSceneX()+","+event.getSceneY());
+                   // System.out.println(orgSceneX+","+orgSceneY+","+event.getSceneX()+","+event.getSceneY());
                     if(calculateDistanceToCorrectPosition()<50){
                         ((PuzzlePiece)(event.getSource())).setTranslateX(correctX);
                         ((PuzzlePiece)(event.getSource())).setTranslateY(correctY);

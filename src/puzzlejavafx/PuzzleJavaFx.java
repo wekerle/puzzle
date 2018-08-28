@@ -128,7 +128,7 @@ public class PuzzleJavaFx extends Application implements LevelSelectedEventListe
     }    
     
     private void renderLevel(LevelModel level){
-        gameSession=new GameSessionView(level,this);
+        gameSession=new GameSessionView(level,this,borderPane.getWidth());
         borderPane.setCenter(gameSession);
         new Timer().schedule(
             new TimerTask() {
@@ -136,7 +136,7 @@ public class PuzzleJavaFx extends Application implements LevelSelectedEventListe
                 public void run() {
                      gameSession.initPuzzlesCorrectPosition();
                 }
-            }, 0, 1);
+            }, 500);
     }
 
     @Override
