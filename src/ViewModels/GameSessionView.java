@@ -12,19 +12,15 @@ import Models.PuzzlePiece;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import puzzlejavafx.PuzzleCutter;
@@ -36,7 +32,7 @@ import puzzlejavafx.PuzzleCutter;
 public class GameSessionView extends BorderPane implements PuzzlePositionChangeListener{
     
     private HashMap<Integer,PuzzlePiece> puzzlePiecesMap=new LinkedHashMap<Integer,PuzzlePiece>();
-    private HBox footer=new HBox();
+    private GridPane footer=new GridPane();
     private GridPane center=new GridPane();
     private Pane mainBoard=new Pane();
     private Image otherImage=new Image("img/refresh.png");
@@ -54,7 +50,6 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
     }
         
     private void initBottomContent(){      
-        ImageView otherButton=new ImageView(otherImage);
         VBox otherButtonContainer=new VBox();
         Pane puzzlePiecesContainer=new Pane();
 
@@ -67,15 +62,16 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
             
             if(i==puzzlesInFooter){
                isVisible=false;
-               i=1;
+               i=0;
             }
             puzzlePiecesContainer.getChildren().add(puzzle);
             i++;
         }
-        otherButtonContainer.getStyleClass().add("cursor-hand");
-        otherButtonContainer.getChildren().add(otherButton);
-        otherButtonContainer.setAlignment(Pos.CENTER);
-        otherButtonContainer.setOnMouseClicked(new EventHandler<MouseEvent>()
+        Button buttonOther=new Button("",new ImageView(otherImage));
+        buttonOther.setPadding(Insets.EMPTY);
+        buttonOther.getStyleClass().add("cursor-hand");
+
+        buttonOther.setOnMouseClicked(new EventHandler<MouseEvent>()
         {
 
             @Override
@@ -83,14 +79,25 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
                 showOtherPuzzles();
             }
         });
-        footer.getChildren().add(otherButtonContainer);
-        footer.getChildren().add(puzzlePiecesContainer);
         
+        footer.add(puzzlePiecesContainer,1,0);
+        footer.add(otherButtonContainer,0,0);
+        otherButtonContainer.getChildren().add(buttonOther);
         footer.getStyleClass().add("footer");
+        footer.setHgap(SPACE_BEETWEEN_PUZZLES);
     }
     
     private void showOtherPuzzles(){
-        
+        int i=0;
+        for (HashMap.Entry item : puzzlePiecesMap.entrySet()){
+            PuzzlePiece puzzlePiece=(PuzzlePiece)item.getValue();
+            if(puzzlePiece.isVisible()&& !puzzleIsOutFromFooter(puzzlePiece)){
+                puzzlePiece.setIsVisible(false);
+            }else if(!puzzlePiece.isVisible()&& !puzzleIsOutFromFooter(puzzlePiece) && i<puzzlesInFooter){
+                puzzlePiece.setIsVisible(true);
+                i++;
+            }
+        }
     } 
     
     private void initCenterContent(Image image) 
@@ -199,7 +206,7 @@ public class GameSessionView extends BorderPane implements PuzzlePositionChangeL
             double correctY=centerBounds.getMinY()-centerBounds.getHeight();
             double correctX=centerBounds.getMinX()-otherImage.getWidth()+centerPadding.getLeft();
             
-            puzzle.setCorrectX(correctX+j*puzzle.getPuzzlePieceWidth());
+            puzzle.setCorrectX(correctX+j*puzzle.getPuzzlePieceWidth()-footer.getHgap());
             puzzle.setCorrectY(correctY+i*puzzle.getPuzzlePieceHeight());
             
             i++;

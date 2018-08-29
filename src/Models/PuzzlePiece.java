@@ -132,8 +132,7 @@ public class PuzzlePiece extends HBox{
         this.puzzlePieceWidth=width;
         this.puzzlePieceHeight=height;
         this.toothHeights=toothHeights;
-        
-       this.setOnMousePressed(new EventHandler<MouseEvent>(){
+        this.setOnMousePressed(new EventHandler<MouseEvent>(){
             @Override
             public void handle(MouseEvent event) {
                 PuzzlePiece.this.toFront();
@@ -143,7 +142,7 @@ public class PuzzlePiece extends HBox{
                 orgTranslateY = ((PuzzlePiece)(event.getSource())).getTranslateY();
                 // System.out.println(orgSceneX+","+orgSceneY+","+orgTranslateX+","+orgTranslateY);
             }
-       });
+        });
        
         this.setOnMouseDragged(new EventHandler<MouseEvent>(){
             @Override
@@ -156,23 +155,24 @@ public class PuzzlePiece extends HBox{
 
                     ((PuzzlePiece)(event.getSource())).setTranslateX(newTranslateX);
                     ((PuzzlePiece)(event.getSource())).setTranslateY(newTranslateY);
-
+                    
                    // System.out.println(orgSceneX+","+orgSceneY+","+event.getSceneX()+","+event.getSceneY());
                     if(calculateDistanceToCorrectPosition()<50){
                         ((PuzzlePiece)(event.getSource())).setTranslateX(correctX);
                         ((PuzzlePiece)(event.getSource())).setTranslateY(correctY);
-                        isOnRightPosition=true;
+                         isOnRightPosition=true;
+                         PuzzlePiece.this.toBack();
                     }
                 }
             }
-       });
+        });
         
         this.setOnMouseReleased(new EventHandler<MouseEvent>(){
             @Override
             public void handle(MouseEvent event) {
                 puzzlePositionChangeListener.positionChanged(PuzzlePiece.this);
             }
-       });       
+        });       
     }
     
     public int getPuzzleId(){
